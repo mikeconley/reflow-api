@@ -28,6 +28,11 @@ class API extends ExtensionAPI {
                 reflow(start, end) {
                   // Grab the stack, but slice off the top frame inside this observer.
                   let stack = new Error().stack.split("\n").slice(1).join("\n");
+                  // If the stack string is empty, call Math.sin() so that a native debugger
+                  // has the opportunity to pause execution and get a native stack dump
+                  if (!stack) {
+                    Math.sin();
+                  }
 
                   let id = ExtensionParent.apiManager.global.windowTracker.getId(window);
                   fire.async(id, start, end, stack);
