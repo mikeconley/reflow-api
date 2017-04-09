@@ -18,4 +18,4 @@ You can then add a listener for uninterruptible reflows across all browser windo
 
     browser.reflows.onUninterruptibleReflow(listener);
     
-There are some uninterruptible reflows that do not appear to provide a stack, so the stack string will be empty. In those cases, the API will call `Math.sin()` on the main thread of the parent process, which a native debugger can break on (breaking on `js::math_sin`) to get the native stack.
+There are some uninterruptible reflows that do not appear to provide a stack, so the stack string will be empty. In those cases, if a debugger is attached, we will break execution.

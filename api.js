@@ -31,7 +31,10 @@ class API extends ExtensionAPI {
                   // If the stack string is empty, call Math.sin() so that a native debugger
                   // has the opportunity to pause execution and get a native stack dump
                   if (!stack) {
-                    Math.sin();
+                    let debug = Cc["@mozilla.org/xpcom/debug;1"].getService(Ci.nsIDebug2);
+                    if (debug.isDebuggerAttached) {
+                      debug.break("api.js", 36);
+                    }
                   }
 
                   let id = ExtensionParent.apiManager.global.windowTracker.getId(window);
