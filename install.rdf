@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>reflow@experiments.addons.mozilla.org</em:id>
+    <em:name>Reflow Observer API</em:name>
+    <em:type>256</em:type>
+    <em:version>0.1</em:version>
+    <em:description>Reflow Observer API</em:description>
+    <em:creator>Mike Conley</em:creator>
+    <em:multiprocessCompatible>true</em:multiprocessCompatible>
+
+    <em:targetApplication>
+      <!-- Firefox -->
+      <Description>
+          <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+          <em:minVersion>52.0</em:minVersion>
+          <em:maxVersion>*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+  </Description>
+</RDF>
