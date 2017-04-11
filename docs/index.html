@@ -5,7 +5,7 @@
 </head>
 <body>
 <p>
-  This extension is required in order to make <a href="https://mikeconley.github.io/ohnoreflow/">Oh no! Reflow!</a> work properly. It exposes an experimental WebExtension API that allows Oh no! Reflow! to add a listener for uninterruptible reflow occurring in each browser window.
+  This extension is required in order to make <a id="install" href="https://mikeconley.github.io/ohnoreflow/">Oh no! Reflow!</a> work properly. It exposes an experimental WebExtension API that allows Oh no! Reflow! to add a listener for uninterruptible reflow occurring in each browser window.
 </p>
 <p>
   See <a href="https://github.com/mikeconley/reflow-api">the README.md file</a> for more details.
@@ -14,4 +14,18 @@
   <a href="https://raw.githubusercontent.com/mikeconley/reflow-api/master/reflow-api.xpi">Install Reflow WebExtension API Experiment</a>
 </p>
 </body>
+
+<script>
+
+if (window.InstallTrigger) {
+  addEventListener("load", function() {
+    var install = document.getElementById("install");
+    install.addEventListener("click", function(e) {
+      window.InstallTrigger(install.href);
+      e.preventDefault();
+    });
+  });
+}
+
+</script>
 </html>
