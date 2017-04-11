@@ -3,6 +3,10 @@ Reflow observer WebExtension API for the Firefox UI
 
 This experimental WebExtension API allows a WebExtension to monitor the Firefox UI for uninterruptible reflows.
 
+# Installation
+
+Visit the [docs/](https://mikeconley.github.io/reflow-api/) page for installation instructions.
+
 # Usage
 
 After installation, have your WebExtension request the "experiments.reflow" permission.
