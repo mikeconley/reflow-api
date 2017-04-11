@@ -10,6 +10,8 @@
     <em:creator>Mike Conley</em:creator>
     <em:multiprocessCompatible>true</em:multiprocessCompatible>
 
+    <em:updateURL>https://raw.githubusercontent.com/mikeconley/reflow-api/master/docs/update.rdf</em:updateURL>
+
     <em:targetApplication>
       <!-- Firefox -->
       <Description>
