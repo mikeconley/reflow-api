@@ -4,13 +4,22 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 XPCOMUtils.defineLazyModuleGetter(this, "ExtensionUtils",
                                   "resource://gre/modules/ExtensionUtils.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "ExtensionCommon",
+                                  "resource://gre/modules/ExtensionCommon.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "ExtensionParent",
                                   "resource://gre/modules/ExtensionParent.jsm");
 
 class API extends ExtensionAPI {
   getAPI(context) {
     const { windowManager } = context.extension;
-    const { SingletonEventManager } = ExtensionUtils;
+
+    // SingletonEventManager was moved to ExtensionCommon in bug 1317697.
+    let SingletonEventManager;
+    if (ExtensionCommon.SingletonEventManager) {
+      SingletonEventManager = ExtensionCommon.SingletonEventManager;
+    } else {
+      SingletonEventManager = ExtensionUtils.SingletonEventManager;
+    }
 
     // Weakly maps XUL windows to their reflow observers.
     let windowMap = new WeakMap();
