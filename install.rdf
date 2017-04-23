@@ -5,7 +5,7 @@
     <em:id>reflow@experiments.addons.mozilla.org</em:id>
     <em:name>Reflow Observer API</em:name>
     <em:type>256</em:type>
-    <em:version>0.3</em:version>
+    <em:version>0.4</em:version>
     <em:description>Reflow Observer API</em:description>
     <em:creator>Mike Conley</em:creator>
     <em:multiprocessCompatible>true</em:multiprocessCompatible>
