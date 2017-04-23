@@ -27,55 +27,66 @@ class API extends ExtensionAPI {
     return {
       reflows: {
         onUninterruptableReflow: new SingletonEventManager(context, "experiments.reflow", fire => {
-          // Create a scope so that we don't accidentally leak windows in our various
-          // function closures...
-          {
-            let windows = Array.from(windowManager.getAll(), win => win.window);
 
-            for (let window of windows) {
-              let observer = {
-                reflow(start, end) {
-                  // Grab the stack, but slice off the top frame inside this observer.
-                  let stack = new Error().stack.split("\n").slice(1).join("\n");
-                  // If the stack string is empty, call Math.sin() so that a native debugger
-                  // has the opportunity to pause execution and get a native stack dump
-                  if (!stack) {
-                    let debug = Cc["@mozilla.org/xpcom/debug;1"].getService(Ci.nsIDebug2);
-                    if (debug.isDebuggerAttached) {
-                      debug.break("api.js", 36);
-                    }
+          const windowTracker = ExtensionParent.apiManager.global.windowTracker;
+          let windows = Array.from(windowManager.getAll(), win => win.window);
+
+          let observeWindow = (win) => {
+            let observer = {
+              reflow(start, end) {
+                // Grab the stack, but slice off the top frame inside this observer.
+                let stack = new Error().stack.split("\n").slice(1).join("\n");
+                // If the stack string is empty, and a debugger is attached, try to
+                // hit a breakpoint.
+                if (!stack) {
+                  let debug = Cc["@mozilla.org/xpcom/debug;1"].getService(Ci.nsIDebug2);
+                  if (debug.isDebuggerAttached) {
+                    debug.break("api.js", 51);
                   }
+                }
 
-                  let id = ExtensionParent.apiManager.global.windowTracker.getId(window);
-                  fire.async(id, start, end, stack);
-                },
-                reflowInterruptible(start, end) {},
-                QueryInterface: XPCOMUtils.generateQI([Ci.nsIReflowObserver,
-                                                       Ci.nsISupportsWeakReference])
-              };
+                let id = windowTracker.getId(win);
+                fire.async(id, start, end, stack);
+              },
+              reflowInterruptible(start, end) {},
+              QueryInterface: XPCOMUtils.generateQI([Ci.nsIReflowObserver,
+                                                     Ci.nsISupportsWeakReference])
+            };
 
-              let docShell = window.QueryInterface(Ci.nsIInterfaceRequestor)
-                                   .getInterface(Ci.nsIWebNavigation)
-                                   .QueryInterface(Ci.nsIDocShell);
-              docShell.addWeakReflowObserver(observer);
+            let docShell = win.QueryInterface(Ci.nsIInterfaceRequestor)
+                              .getInterface(Ci.nsIWebNavigation)
+                              .QueryInterface(Ci.nsIDocShell);
+            docShell.addWeakReflowObserver(observer);
 
-              windowMap.set(window, observer);
-            }
+            windowMap.set(win, observer);
+          };
+
+          for (let win of windows) {
+            observeWindow(win);
           }
+
+          let windowOpenListener = (win) => {
+            observeWindow(win);
+          }
+
+          windowTracker.addListener("domwindowopened", windowOpenListener);
+          windows = [];
 
           return () => {
             let windows = Array.from(windowManager.getAll(), win => win.window);
-            for (let window of windows) {
-              let observer = windowMap.get(window);
+            for (let win of windows) {
+              let observer = windowMap.get(win);
               if (observer) {
-                let docShell = window.QueryInterface(Ci.nsIInterfaceRequestor)
-                                     .getInterface(Ci.nsIWebNavigation)
-                                     .QueryInterface(Ci.nsIDocShell);
+                let docShell = win.QueryInterface(Ci.nsIInterfaceRequestor)
+                                  .getInterface(Ci.nsIWebNavigation)
+                                  .QueryInterface(Ci.nsIDocShell);
                 docShell.removeWeakReflowObserver(observer);
               }
 
-              windowMap.delete(window);
+              windowMap.delete(win);
             }
+
+            windowTracker.removeListener("domwindowopened", windowOpenListener);
           }
 
         }).api()
