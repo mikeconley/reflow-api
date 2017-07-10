@@ -14,11 +14,14 @@ class API extends ExtensionAPI {
     const { windowManager } = context.extension;
 
     // SingletonEventManager was moved to ExtensionCommon in bug 1317697.
-    let SingletonEventManager;
-    if (ExtensionCommon.SingletonEventManager) {
-      SingletonEventManager = ExtensionCommon.SingletonEventManager;
+    // It was then renamed to EventManager in bug 1369577.
+    let EventManager;
+    if (ExtensionCommon.EventManager) {
+      EventManager = ExtensionCommon.EventManager;
+    } else if (ExtensionCommon.SingletonEventManager) {
+      EventManager = ExtensionCommon.SingletonEventManager;
     } else {
-      SingletonEventManager = ExtensionUtils.SingletonEventManager;
+      EventManager = ExtensionUtils.SingletonEventManager;
     }
 
     // Weakly maps XUL windows to their reflow observers.
@@ -26,7 +29,7 @@ class API extends ExtensionAPI {
 
     return {
       reflows: {
-        onUninterruptableReflow: new SingletonEventManager(context, "experiments.reflow", fire => {
+        onUninterruptableReflow: new EventManager(context, "experiments.reflow", fire => {
 
           const windowTracker = ExtensionParent.apiManager.global.windowTracker;
           let windows = Array.from(windowManager.getAll(), win => win.window);
